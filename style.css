@@ -1,0 +1,277 @@
+:root {
+  --green: #1ed760;
+  --bg: #121212;
+  --panel: #1b1b1b;
+  --muted: #b3b3b3;
+  --white: #fff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #222 0, #121212 360px);
+  color: var(--white);
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 28px max(24px, calc((100vw - 1000px) / 2));
+  border-bottom: 1px solid #333;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--green);
+  display: grid;
+  place-items: center;
+}
+
+.logo svg { width: 25px; height: 25px; }
+
+main {
+  width: min(100% - 32px, 460px);
+  margin: 42px auto 56px;
+  background: #121212;
+  border-radius: 12px;
+  padding: 34px 38px 30px;
+  box-shadow: 0 12px 50px #0005;
+}
+
+h1 {
+  text-align: center;
+  font-size: 30px;
+  line-height: 1.2;
+  margin: 8px 0 28px;
+  letter-spacing: -.8px;
+}
+
+h2 {
+  text-align: center;
+  font-size: 22px;
+  line-height: 1.25;
+  margin: 0 0 24px;
+}
+
+.mode-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  background: #242424;
+  border-radius: 999px;
+  margin-bottom: 28px;
+}
+
+.tab {
+  display: block;
+  border-radius: 999px;
+  background: transparent;
+  color: #ccc;
+  padding: 12px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+#login-mode:checked ~ .tabs .login-tab,
+#register-mode:checked ~ .tabs .register-tab {
+  background: var(--green);
+  color: #111;
+}
+
+#register-mode:focus-visible ~ .tabs .register-tab,
+#login-mode:focus-visible ~ .tabs .login-tab {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+label:not(.tab) { display: block; }
+
+form > label {
+  font-size: 14px;
+  font-weight: 700;
+  margin: 17px 0 8px;
+}
+
+input:not(.mode-radio) {
+  width: 100%;
+  padding: 14px 13px;
+  background: #121212;
+  border: 1px solid #727272;
+  border-radius: 5px;
+  color: white;
+  font-size: 15px;
+  outline: none;
+}
+
+input:not(.mode-radio):focus {
+  border: 2px solid var(--green);
+  padding: 13px 12px;
+}
+
+input::placeholder { color: #858585; }
+
+.hint {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 7px 0 0;
+}
+
+.primary {
+  margin-top: 24px;
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 15px;
+  background: var(--green);
+  color: #101010;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .12s, background .12s;
+}
+
+.primary:hover { background: #3be477; transform: scale(1.015); }
+.primary:focus-visible { outline: 2px solid white; outline-offset: 3px; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #777;
+  font-size: 12px;
+  margin: 24px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  height: 1px;
+  background: #3a3a3a;
+  flex: 1;
+}
+
+.switch {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  margin: 23px 0 4px;
+}
+
+.switch label {
+  display: inline;
+  color: white;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.demo-note {
+  border: 1px solid #383838;
+  border-radius: 7px;
+  padding: 12px;
+  color: #aaa;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 24px;
+}
+
+.register-panel { display: none; }
+#register-mode:checked ~ .login-panel { display: none; }
+#register-mode:checked ~ .register-panel { display: block; }
+
+footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 24px;
+  color: #888;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+  header { padding: 20px 22px; }
+  main { padding: 28px 22px; margin-top: 25px; }
+  h1 { font-size: 27px; }
+}
+
+/* ---------- Napake v obrazcih ---------- */
+input.invalid:not(.mode-radio),
+input.invalid:not(.mode-radio):focus {
+  border-color: #f15e6c;
+}
+
+input.invalid:not(.mode-radio):not(:focus) {
+  border-width: 2px;
+  padding: 13px 12px;
+}
+
+/* ---------- SweetAlert2 v Spotify slogu ---------- */
+.swal2-popup.spotify-swal {
+  font-family: Arial, Helvetica, sans-serif;
+  border: 1px solid #333;
+  border-radius: 12px;
+}
+
+.spotify-swal .swal2-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.5px;
+}
+
+.spotify-swal .swal2-html-container {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.spotify-swal .swal-list {
+  display: inline-block;
+  text-align: left;
+  margin: 4px 0 0;
+  padding-left: 20px;
+  color: #ddd;
+}
+
+.spotify-swal .swal-list li + li { margin-top: 4px; }
+
+.swal2-popup.spotify-swal .swal2-confirm.swal2-styled {
+  background: var(--green);
+  color: #101010;
+  border-radius: 999px;
+  padding: 12px 32px;
+  font-size: 15px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.swal2-popup.spotify-swal .swal2-confirm.swal2-styled:hover { background: #3be477; }
+
+.swal2-popup.spotify-swal .swal2-confirm.swal2-styled:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}

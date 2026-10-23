@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spotify — Glasba za vsak trenutek</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M6 11c7-2 14-1 20 3M7 16c6-2 12-1 17 2M8 21c5-1 9 0 13 2" stroke="#101010" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </span>
+      <span>Spotify</span>
+    </div>
+  </header>
+
+  <main>
+    <h1>Pozdravljen!</h1>
+
+    <!-- Preklapljanje med obrazcema deluje s CSS-jem, brez JavaScripta. -->
+    <input class="mode-radio" type="radio" name="mode" id="login-mode" checked>
+    <input class="mode-radio" type="radio" name="mode" id="register-mode">
+    <div class="tabs" role="tablist" aria-label="Vrsta obrazca">
+      <label class="tab login-tab" for="login-mode">Prijava</label>
+      <label class="tab register-tab" for="register-mode">Registracija</label>
+    </div>
+
+    <section class="login-panel" aria-label="Prijava">
+      <h2>Prijavi se v Spotify</h2>
+      <!-- novalidate: napake namesto brskalnika prikaže SweetAlert (glej skripto spodaj) -->
+      <form id="login-form" action="#" method="get" novalidate>
+        <label for="login-email">E-poštni naslov</label>
+        <input id="login-email" name="email" type="email" autocomplete="email" placeholder="ime@primer.si" required>
+
+        <label for="login-password">Geslo</label>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Vnesi geslo" minlength="6" required>
+
+        <button class="primary" type="submit">Prijava</button>
+      </form>
+      <div class="divider">ALI</div>
+      <p class="switch">Še nimaš računa? <label for="register-mode">Registriraj se</label></p>
+    </section>
+
+    <section class="register-panel" aria-label="Registracija">
+      <h2>Ustvari račun</h2>
+      <form id="register-form" action="#" method="get" novalidate>
+        <label for="register-name">Ime</label>
+        <input id="register-name" name="name" autocomplete="name" placeholder="Kako ti je ime" required>
+
+        <label for="register-email">E-poštni naslov</label>
+        <input id="register-email" name="email" type="email" autocomplete="email" placeholder="ime@primer.si" required>
+
+        <label for="register-password">Geslo</label>
+        <input id="register-password" name="password" type="password" autocomplete="new-password" placeholder="Ustvari geslo" minlength="6" required>
+        <p class="hint">Geslo naj vsebuje vsaj 6 znakov. Za šolski prikaz uporabi izmišljene podatke.</p>
+
+        <label for="confirm-password">Ponovi geslo</label>
+        <input id="confirm-password" name="confirm-password" type="password" autocomplete="new-password" placeholder="Ponovno vnesi geslo" minlength="6" required>
+
+        <button class="primary" type="submit">Ustvari račun</button>
+      </form>
+      <div class="divider">ALI</div>
+      <p class="switch">Že imaš račun? <label for="login-mode">Prijavi se</label></p>
+    </section>
+
+    <p class="demo-note"><strong>Šolski demo:</strong> Obrazci so prikazni in nimajo prave avtentikacije ali shranjevanja računov.</p>
+  </main>
+
+  <footer>© 2026 Spotify · Šolski projekt<br>Ta predstavitvena stran ni povezana s Spotifyjem.</footer>
+
+  <!-- SweetAlert2 (potrebuje internetno povezavo) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.5/dist/sweetalert2.all.min.js"></script>
+  <script>
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const MIN_PASSWORD = 6;
+
+    // ---- Pravila preverjanja: vsako polje vrne največ eno napako ----
+    function checkEmail(input) {
+      const value = input.value.trim();
+      if (!value) return 'E-poštni naslov manjka.';
+      if (!EMAIL_RE.test(value)) return 'E-poštni naslov ni veljaven (npr. ime@primer.si).';
+    }
+
+    function checkPassword(input) {
+      if (!input.value) return 'Geslo manjka.';
+      if (input.value.length < MIN_PASSWORD) return 'Geslo mora imeti vsaj ' + MIN_PASSWORD + ' znakov.';
+    }
+
+    function validateLogin(form) {
+      return [
+        { field: form.elements['email'],    message: checkEmail(form.elements['email']) },
+        { field: form.elements['password'], message: checkPassword(form.elements['password']) }
+      ];
+    }
+
+    function validateRegister(form) {
+      const name = form.elements['name'];
+      const password = form.elements['password'];
+      const confirm = form.elements['confirm-password'];
+
+      let nameMsg;
+      if (!name.value.trim()) nameMsg = 'Ime manjka.';
+      else if (name.value.trim().length < 2) nameMsg = 'Ime mora imeti vsaj 2 znaka.';
+
+      let confirmMsg;
+      if (!confirm.value) confirmMsg = 'Ponovitev gesla manjka.';
+      else if (confirm.value !== password.value) confirmMsg = 'Gesli se ne ujemata.';
+
+      return [
+        { field: name,                      message: nameMsg },
+        { field: form.elements['email'],    message: checkEmail(form.elements['email']) },
+        { field: password,                  message: checkPassword(password) },
+        { field: confirm,                   message: confirmMsg }
+      ];
+    }
+
+    // ---- Opozorila ----
+    const swalBase = {
+      background: '#1b1b1b',
+      color: '#ffffff',
+      customClass: { popup: 'spotify-swal' },
+      confirmButtonText: 'V redu'
+    };
+
+    function showErrors(problems) {
+      const first = problems[0].field;
+      const list = '<ul class="swal-list">' +
+        problems.map(function (p) { return '<li>' + p.message + '</li>'; }).join('') +
+        '</ul>';
+
+      // Če se SweetAlert ni naložil (ni interneta), uporabimo navaden alert.
+      if (typeof Swal === 'undefined') {
+        alert(problems.map(function (p) { return p.message; }).join('\n'));
+        first.focus();
+        return;
+      }
+
+      Swal.fire(Object.assign({}, swalBase, {
+        icon: 'error',
+        title: 'Obrazec ni pravilno izpolnjen',
+        html: list,
+        returnFocus: false
+      })).then(function () { first.focus(); });
+    }
+
+    function showSuccess(title, text) {
+      if (typeof Swal === 'undefined') { alert(title + '\n' + text); return; }
+      Swal.fire(Object.assign({}, swalBase, {
+        icon: 'success',
+        title: title,
+        text: text
+      }));
+    }
+
+    // ---- Povezava obrazca s preverjanjem ----
+    function setupForm(form, validate, onSuccess) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        form.querySelectorAll('.invalid').forEach(function (el) {
+          el.classList.remove('invalid');
+          el.removeAttribute('aria-invalid');
+        });
+
+        const problems = validate(form).filter(function (r) { return r.message; });
+
+        if (problems.length) {
+          problems.forEach(function (p) {
+            p.field.classList.add('invalid');
+            p.field.setAttribute('aria-invalid', 'true');
+          });
+          showErrors(problems);
+          return;
+        }
+
+        onSuccess(form);
+        form.reset();
+      });
+
+      // Rdeč rob izgine, ko uporabnik začne popravljati polje.
+      form.addEventListener('input', function (e) {
+        e.target.classList.remove('invalid');
+        e.target.removeAttribute('aria-invalid');
+      });
+    }
+
+    setupForm(
+      document.getElementById('login-form'),
+      validateLogin,
+      function () { showSuccess('Prijava uspešna', 'Šolski demo: pravega računa ni, zato se ne zgodi nič več.'); }
+    );
+
+    setupForm(
+      document.getElementById('register-form'),
+      validateRegister,
+      function (form) {
+        showSuccess('Račun ustvarjen', 'Dobrodošel, ' + form.elements['name'].value.trim() + '! (Šolski demo, podatki se ne shranijo.)');
+      }
+    );
+
+    // Ob preklopu med Prijavo in Registracijo počistimo rdeče robove.
+    document.querySelectorAll('.mode-radio').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        document.querySelectorAll('input.invalid').forEach(function (el) {
+          el.classList.remove('invalid');
+          el.removeAttribute('aria-invalid');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
